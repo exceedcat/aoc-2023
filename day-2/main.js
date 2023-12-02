@@ -22,7 +22,7 @@ const getMax = (rounds, regex) => {
     .reduce((res, round) => Math.max(res, Number.parseInt(round.match(regex)[0])), 0);
 }
 
-const res = inputData.reduce((res, inputStr) => {
+const res1 = inputData.reduce((res, inputStr) => {
   const [gameWithId, gameStrings] = inputStr.split(': ');
   const gameId = +(gameWithId.match(/[0-9]+/)[0]);
   const roundStrings = gameStrings.split('; ');
@@ -39,4 +39,25 @@ const res = inputData.reduce((res, inputStr) => {
   return res;
 }, 0);
 
-console.log('>> res', res);
+console.log('>> res 1', res1);
+
+const res2 = inputData.reduce((res, inputStr) => {
+  const [gameWithId, gameStrings] = inputStr.split(': ');
+  const gameId = +(gameWithId.match(/[0-9]+/)[0]);
+  const roundStrings = gameStrings.split('; ');
+
+  const [maxGreen, maxBlue, maxRed] = [
+    getMax(roundStrings, greenRegex),
+    getMax(roundStrings, blueRegex),
+    getMax(roundStrings, redRegex),
+  ];
+
+  return res + maxRed * maxGreen * maxBlue;
+
+  // if (maxGreen <= MAX_GREEN && maxBlue <= MAX_BLUE && maxRed <= MAX_RED) {
+  //   return res + gameId;
+  // }
+  // return res;
+}, 0);
+
+console.log(res2);
