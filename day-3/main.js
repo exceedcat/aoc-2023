@@ -15,25 +15,16 @@ const inputData1 = [
   '.664.598..',
 ]
 
-let sum = 0;
-
 const getNumberCoords = (str, y) => {
   let coords = [];
   let currentCoord = null;
+
   str.split('').forEach((symb, x) => {
     if (!Number.isNaN(+symb)) {
-      if (currentCoord) {
-        currentCoord = {
-          ...currentCoord,
-          value: currentCoord.value + symb,
-        }
-      } else {
-        currentCoord = {
-          x,
-          y,
-          value: symb,
-        }
-      }
+      currentCoord = currentCoord ? {
+        ...currentCoord,
+        value: currentCoord.value + symb,
+      } : {x, y, value: symb};
     } else {
       if (currentCoord) {
         coords.push(currentCoord);
@@ -49,16 +40,18 @@ const getNumberCoords = (str, y) => {
   return coords;
 }
 
-const isNumAdjToSymbol = ({ x, y, value }, data) => {
-  const left = {x: x - 1, y };
+const isNumAdjToSymbol = ({x, y, value}, data) => {
+  const left = {x: x - 1, y};
   const right = {x: x + value.length, y};
-  const top = Array(value.length + 2).fill(null).map((_,i) => ({ x: x - 1 + i, y: y - 1 }));
-  const bottom = Array(value.length + 2).fill(null).map((_,i) => ({ x: x - 1 + i, y: y + 1 }));
+  const top = Array(value.length + 2).fill(null).map((_, i) => ({x: x - 1 + i, y: y - 1}));
+  const bottom = Array(value.length + 2).fill(null).map((_, i) => ({x: x - 1 + i, y: y + 1}));
 
   return [left, right, ...top, ...bottom].some(coord => {
     return data[coord.y] && data[coord.y][coord.x] && data[coord.y][coord.x] !== '.' && Number.isNaN(+data[coord.y][coord.x])
   });
 }
+
+let sum = 0;
 
 inputData.forEach((str, i, data) => {
   const numberCoords = getNumberCoords(str, i);
@@ -77,20 +70,27 @@ const getGearCoords = (str, y) => {
 
   str.split('').forEach((symb, x) => {
     if (symb === '*') {
-      coords.push({ x, y })
+      coords.push({x, y})
     }
   });
 
   return coords;
 }
-const getAdjNumbers = ({ x, y }, data) => {
+
+const isAdj = (numCoord, x) => {
+  const isAdjDiagonally = Math.abs(numCoord.x - x) <= 1;
+  const isOverlapping = numCoord.x <= x && (numCoord.x + numCoord.value.length) >= x;
+
+  return isAdjDiagonally || isOverlapping;
+}
+const getAdjNumbers = ({x, y}, data) => {
   let numbers = [];
   const top = getNumberCoords(data[y - 1], y - 1);
   const bottom = getNumberCoords(data[y + 1], y + 1);
   const same = getNumberCoords(data[y], y);
 
   [...top, ...bottom, ...same].forEach(numCoord => {
-    if (Math.abs(numCoord.x - x) <= 1 || (numCoord.x <= x && (numCoord.x + numCoord.value.length) >= x)) {
+    if (isAdj(numCoord, x)) {
       numbers.push(numCoord);
     }
   })
