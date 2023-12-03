@@ -71,3 +71,46 @@ inputData.forEach((str, i, data) => {
 })
 
 console.log(sum)
+
+const getGearCoords = (str, y) => {
+  let coords = [];
+
+  str.split('').forEach((symb, x) => {
+    if (symb === '*') {
+      coords.push({ x, y })
+    }
+  });
+
+  return coords;
+}
+const getAdjNumbers = ({ x, y }, data) => {
+  let numbers = [];
+  const top = getNumberCoords(data[y - 1], y - 1);
+  const bottom = getNumberCoords(data[y + 1], y + 1);
+  const same = getNumberCoords(data[y], y);
+
+  [...top, ...bottom, ...same].forEach(numCoord => {
+    if (Math.abs(numCoord.x - x) <= 1 || (numCoord.x <= x && (numCoord.x + numCoord.value.length) >= x)) {
+      numbers.push(numCoord);
+    }
+  })
+
+  return numbers;
+}
+
+let sum1 = 0;
+
+inputData.forEach((str, i, data) => {
+  const gearCoords = getGearCoords(str, i);
+
+  gearCoords.forEach(coord => {
+    const adjNumbers = getAdjNumbers(coord, data);
+
+    if (adjNumbers.length === 2) {
+      sum1 += (+adjNumbers[0].value * +adjNumbers[1].value);
+    }
+  })
+
+})
+
+console.log(sum1)
