@@ -12,8 +12,8 @@ const inputData1 = [
 ]
 
 const getCardNumber = (str) => {
-  const [, number] = str.split(' ');
-  return +number;
+  const [, number] = str.split('Card ');
+  return +number.trim();
 }
 
 const getNumbers = (str) => {
@@ -23,8 +23,7 @@ const getNumbers = (str) => {
 let sum = 0;
 
 inputData.forEach(cardStr => {
-  const [cardPart, valuesPart] = cardStr.split(':');
-  const cardNumber = getCardNumber(cardPart);
+  const [, valuesPart] = cardStr.split(':');
   const [winningNumbers, cardNumbers] = valuesPart.split('|').map(p => getNumbers(p));
 
   const cardPoints = winningNumbers.length + cardNumbers.length - new Set([...winningNumbers, ...cardNumbers]).size;
@@ -34,4 +33,29 @@ inputData.forEach(cardStr => {
   }
 })
 
-console.log(sum)
+// console.log(sum)
+
+const copies = {};
+
+inputData.forEach(cardStr => {
+  const [cardPart, valuesPart] = cardStr.split(':');
+  const cardNumber = getCardNumber(cardPart);
+  const [winningNumbers, cardNumbers] = valuesPart.split('|').map(p => getNumbers(p));
+
+  const cardPoints = winningNumbers.length + cardNumbers.length - new Set([...winningNumbers, ...cardNumbers]).size;
+
+  const copiesOfCurrentCard = (copies[cardNumber] || 0) + 1;
+  copies[cardNumber] = copiesOfCurrentCard;
+
+  for (let i = cardNumber + 1; i <= cardNumber + cardPoints; i++) {
+    copies[i] = (copies[i] || 0) + copiesOfCurrentCard;
+  }
+});
+
+let sum1 = 0;
+
+Object.values(copies).map((amount) => {
+  sum1 += amount;
+})
+
+console.log(sum1)
