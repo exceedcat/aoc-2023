@@ -32,3 +32,17 @@ races.forEach(race => {
 })
 
 console.log(res)
+
+const oneRace = {
+  time: +inputData[0].split(':')[1].split(' ').join(''),
+  distance: +inputData[1].split(':')[1].split(' ').join(''),
+}
+
+let res1 = 0;
+for (let i = 1; i < oneRace.time; i++) {
+  if (isWinnable(i, oneRace.time, oneRace.distance)) {
+    res1 += 1;
+  }
+}
+
+console.log(res1)
