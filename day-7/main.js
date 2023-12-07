@@ -22,31 +22,52 @@ const getHandType = (hand) => {
 
   if (Object.keys(cardsMap).length === 2 && Object.values(cardsMap).indexOf(4) !== -1) {
     // console.log(hand, ' > ', 5)
+    if (cardsMap['J']) {
+      return 6;
+    }
     return 5;
   }
   if (Object.keys(cardsMap).length === 2) {
+    if (cardsMap['J']) {
+      return 6;
+    }
     // console.log(hand, ' > ', 4)
     return 4;
   }
 
   if (Object.keys(cardsMap).length === 3 && Object.values(cardsMap).indexOf(3) !== -1) {
+    if (cardsMap['J']) {
+      return 5;
+    }
     // console.log(hand, ' > ', 3)
     return 3;
   }
   if (Object.keys(cardsMap).length === 3 && Object.values(cardsMap).indexOf(3) === -1) {
+    if (cardsMap['J'] === 2) {
+      return 5;
+    }
+    if (cardsMap['J']) {
+      return 4;
+    }
     // console.log(hand, ' > ', 2)
     return 2;
   }
 
   if (Object.keys(cardsMap).length === 4) {
+    if (cardsMap['J']) {
+      return 3;
+    }
     // console.log(hand, ' > ', 1)
+    return 1;
+  }
+  if (cardsMap['J']) {
     return 1;
   }
   // console.log(hand, ' > ', 0)
   return 0;
 }
 
-const cards = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
+const cards = ['J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A'];
 
 const sortHands = (a, b) => {
   const aValue = getHandType(a.cards);
