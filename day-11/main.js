@@ -4,43 +4,6 @@ const inputData = fs.readFileSync('input.txt', 'utf8').split('\n');
 
 const universe = inputData.map(str => str.split(''));
 
-const expand = (u) => {
-  const rowsWithoutGalaxies = [];
-  for (let i = 0; i < u.length; i++) {
-    if (u[i].indexOf('#') === -1) rowsWithoutGalaxies.push(i);
-  }
-
-  const columnsWithoutGalaxies = [];
-  for (let i = 0; i < u[0].length; i++) {
-    let without = true;
-    for (let j = 0; j < u.length; j++) {
-      if (u[j][i] === '#') {
-        without = false;
-        break;
-      }
-    }
-    if (without) {
-      columnsWithoutGalaxies.push(i);
-    }
-  }
-
-  const expandedHorizontally = u.map(row => row.reduce((res, el, ind) =>
-    [
-      ...res,
-      el,
-      ...(columnsWithoutGalaxies.includes(ind) ? [el] : [])
-    ], []));
-  const expandedVertically = expandedHorizontally.reduce((res, row, ind) => [
-    ...res,
-    row,
-    ...(rowsWithoutGalaxies.includes(ind) ? [row] : [])
-  ], []);
-
-  return expandedVertically;
-}
-
-const expandedUniverse = expand(universe);
-
 const getGalaxies = u => {
   const coords = [];
   for (let i = 0; i < u.length; i++) {
@@ -51,7 +14,7 @@ const getGalaxies = u => {
   return coords;
 }
 
-const galaxies = getGalaxies(expandedUniverse);
+const galaxies = getGalaxies(universe);
 
 const getGalaxyPairs = g => {
   return g.reduce((res, coords, index, g) => {
@@ -65,13 +28,40 @@ const getGalaxyPairs = g => {
 
 const galaxyPairs = getGalaxyPairs(galaxies);
 
-const getPath = ([a, b]) => {
-  // console.log(a)
-  if (a[0] === b[0]) return Math.abs(a[1] - b[1]);
-  if (a[1] === b[1]) return Math.abs(a[0] - b[0]);
-  return Math.abs(a[1] - b[1]) + Math.abs(a[0] - b[0]);
+console.log(galaxyPairs.length)
+
+const rowsWithoutGalaxies = [];
+for (let i = 0; i < universe.length; i++) {
+  if (universe[i].indexOf('#') === -1) rowsWithoutGalaxies.push(i);
 }
 
-const paths = galaxyPairs.map(getPath)
+const columnsWithoutGalaxies = [];
+for (let i = 0; i < universe[0].length; i++) {
+  let without = true;
+  for (let j = 0; j < universe.length; j++) {
+    if (universe[j][i] === '#') {
+      without = false;
+      break;
+    }
+  }
+  if (without) {
+    columnsWithoutGalaxies.push(i);
+  }
+}
 
-console.log(paths.reduce((res, el) => res + el, 0))
+const EXPAND = 1000000;
+
+const getLongPath = ([a,b]) => {
+  const emptyColumns = columnsWithoutGalaxies.filter(c => (c < a[1] && c > b[1]) || (c > a[1] && c < b[1]));
+  if (a[0] === b[0]) {
+    return Math.abs(a[1] - b[1]) + emptyColumns.length * (EXPAND - 1);
+  }
+  const emptyRows = rowsWithoutGalaxies.filter(c => (c < a[0] && c > b[0]) || (c > a[0] && c < b[0]));
+  if (a[1] === b[1]) {
+    return Math.abs(a[0] - b[0]) + emptyRows.length * (EXPAND - 1);
+  }
+  return Math.abs(a[1] - b[1]) + Math.abs(a[0] - b[0]) + emptyColumns.length * (EXPAND - 1) + emptyRows.length * (EXPAND - 1);
+}
+const longPaths = galaxyPairs.map(getLongPath);
+
+console.log(longPaths.reduce((res, el) => res + el, 0))
